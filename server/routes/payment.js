@@ -19,4 +19,12 @@ router.get('/status/:month', auth('ADMIN'), async (req, res) => {
   });
 });
 
+router.get('/my', auth(['TENANT']), async (req, res) => {
+  const payments = await RentPayment
+    .find({ tenantId: req.user.id })
+    .sort({ month: -1 });
+
+  res.json(payments);
+});
+
 module.exports = router;
