@@ -1,24 +1,18 @@
-const express = require("express");
-const cors = require("cors");
-const connectDB = require("./config/db");
-require("dotenv").config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
-
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
-}));
-
+app.use(cors());
 app.use(express.json());
 
-connectDB();
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/tenant', require('./routes/tenant'));
+app.use('/api/payment', require('./routes/payment'));
+app.use('/api/complaint', require('./routes/complaint'));
 
-app.use('/api/admin', require('./routes/adminRoutes'));
-app.use('/api/tenant', require('./routes/tenantRoutes'));
-app.use('/api/payment', require('./routes/paymentRoutes'));
-app.use('/api/complaint', require('./routes/complaintRoutes'));
-
-
-
-app.listen(process.env.PORT, () => console.log("Server running"));
+mongoose.connect(process.env.MONGO_URI).then(() => {
+  console.log('MongoDB Connected');
+  app.listen(5000, () => console.log('Server running on 5000'));
+});

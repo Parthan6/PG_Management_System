@@ -1,16 +1,12 @@
 const jwt = require('jsonwebtoken');
 
+module.exports = (role) => (req, res, next) => {
+  const token = req.headers.authorization;
+  if (!token) return res.sendStatus(401);
 
-module.exports = function (req, res, next) {
-const token = req.headers.authorization;
-if (!token) return res.status(401).json({ msg: 'No token' });
+  const data = jwt.verify(token, process.env.JWT_SECRET);
+  if (role && data.role !== role) return res.sendStatus(403);
 
-
-try {
-const decoded = jwt.verify(token, 'SECRET');
-req.user = decoded;
-next();
-} catch {
-res.status(401).json({ msg: 'Invalid token' });
-}
+  req.user = data;
+  next();
 };
